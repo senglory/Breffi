@@ -6,12 +6,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebApiTest.Interfaces
 {
-    [Table("Brand")]
-    public class Brand : BaseEntity
+    public abstract class BaseEntity
     {
-        public string Descr { get; set; }
-
-        [Required]
-        public string Name { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
+        public virtual System.Guid ID { get; set; }
     }
 }

@@ -9,13 +9,14 @@ using System.Web.Http;
 using WebApiTest.Interfaces;
 using Microsoft.Practices.Unity;
 using WebApiDemo2.App_Start;
-
-
+using System.Net.Http;
+using System.Web.Http.Description;
 
 namespace WebApiDemo2.Controllers
 {
     public class ToolController : ControllerBasic
     {
+        [HttpGet]
         [Route("api/tool/{id?}")]
         public IHttpActionResult GetTool(Guid id)
         {
@@ -23,6 +24,7 @@ namespace WebApiDemo2.Controllers
             return Json(res);
         }
 
+        [HttpGet]
         [Route("api/tool")]
         public IHttpActionResult Get()
         {
@@ -30,6 +32,7 @@ namespace WebApiDemo2.Controllers
             return Json(res);
         }
 
+        [HttpPost]
         [Route("api/tool")]
         public IHttpActionResult PostTool([FromBody]Tool obj)
         {
@@ -41,6 +44,7 @@ namespace WebApiDemo2.Controllers
             return Json(res);
         }
 
+        [HttpPut]
         [Route("api/tool")]
         public IHttpActionResult PutTool([FromBody]Tool obj)
         {
@@ -52,6 +56,7 @@ namespace WebApiDemo2.Controllers
             return Ok();
         }
 
+        [HttpGet]
         [Route("api/tool/{id?}")]
         public IHttpActionResult DeleteTool(Guid id)
         {
@@ -59,7 +64,7 @@ namespace WebApiDemo2.Controllers
             return Ok();
         }
 
-
+        [HttpPost]
         [Route("api/filter-tool")]
         public IHttpActionResult FindTool([FromBody]DataTableRequest requestModel)
         {
@@ -81,6 +86,37 @@ namespace WebApiDemo2.Controllers
                 recordsTotal = queryResult.TotalCount
             };
             return Json(response);
+        }
+
+        [HttpPost]
+        //[ResponseType(typeof(FileUpload))]
+        [Route("api/tool-import-csv")]
+        public IHttpActionResult ImportCSV()
+        {
+            if (HttpContext.Current.Request.Files.AllKeys.Any())
+            {
+                // Get the uploaded image from the Files collection  
+                var httpPostedFile = HttpContext.Current.Request.Files["syncfile"];
+                if (httpPostedFile != null)
+                {
+                    //FileUpload imgupload = new FileUpload();
+                    int length = httpPostedFile.ContentLength;
+                    var csvData = new byte[length];
+                    httpPostedFile.InputStream.Read(csvData, 0, length);
+                    var dataAsString = System.Text.Encoding.Default.GetString(csvData);
+                    var lines = dataAsString.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                    var lst = new Dictionary<Guid , Tool>();
+                    foreach (var line in lines) {
+                        var obj = Tool.FromCSV(line);
+                        lst.Add (obj.ID , obj);
+                    }
+
+                    var lstToBeAdded = _dbContext.GetToolsToBeAdded(lst);
+
+                    return Ok("Sync file processed");
+                }
+            }
+            return NotFound();
         }
     }
 }

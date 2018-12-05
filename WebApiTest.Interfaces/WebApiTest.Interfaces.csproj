@@ -57,7 +57,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseEntity.cs" />
     <Compile Include="Brand.cs" />
+    <Compile Include="QueryResult.cs" />
     <Compile Include="QueryResultTool.cs" />
     <Compile Include="QueryResultToolType.cs" />
     <Compile Include="Tool.cs" />

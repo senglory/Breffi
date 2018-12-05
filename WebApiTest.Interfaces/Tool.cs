@@ -8,17 +8,14 @@ using Newtonsoft.Json;
 
 namespace WebApiTest.Interfaces
 {
-    public class Tool
+    [Table("Tool")]
+    public class Tool : BaseEntity
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Key]
-        public virtual System.Guid ID { get; set; }
+        [Required]
+        public string Descr { get; set; }
 
         [Required]
-        public virtual string Descr { get; set; }
-
-        [Required]
-        public virtual double Price { get; set; }
+        public double Price { get; set; }
 
         [Required]
         [ForeignKey("Brand")]
@@ -27,7 +24,22 @@ namespace WebApiTest.Interfaces
 
         [Required]
         [ForeignKey("ToolType")]
-        public virtual Guid ToolTypeID { get; set; }
+        public Guid ToolTypeID { get; set; }
         public virtual ToolType ToolType { get; set; }
+
+        public static Tool FromCSV(string s)
+        {
+            var arrs = s.Split(new char[] { ',' }, StringSplitOptions.None);
+            var res = new Tool
+            {
+                ID = Guid.Parse(arrs[0]),
+                BrandID = Guid.Parse(arrs[1]),
+                ToolTypeID = Guid.Parse(arrs[2]),
+                Descr = arrs[3],
+                Price = double.Parse(arrs[4])
+            };
+
+            return res;
+        }
     }
 }

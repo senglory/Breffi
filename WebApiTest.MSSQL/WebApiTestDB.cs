@@ -37,8 +37,9 @@ namespace WebApiTest.MSSQL
             var query1 = this.Brands;
             var totalCount = query1.Count();
             var filteredCount = query1.Count();
-            var query2 = query1.Skip(start).Take(length).ToList<Brand>();
-            var sc = new QueryResultBrand(query2, filteredCount, totalCount);
+            var query2 = query1.OrderBy(x => x.ID);
+            var query3 = query2.Skip(start).Take(length).ToList<Brand>();
+            var sc = new QueryResultBrand(query3, filteredCount, totalCount);
             return sc;
         }
 
@@ -84,8 +85,10 @@ namespace WebApiTest.MSSQL
             var query1 = this.ToolTypes;
             var totalCount = query1.Count();
             var filteredCount = query1.Count();
-            var query2 = query1.Skip(start).Take(length).ToList<ToolType>();
-            var sc = new QueryResultToolType(query2, filteredCount, totalCount);
+            var query2 = query1.OrderBy(x => x.ID);
+            var query3 = query2.Skip(start).Take(length).ToList<ToolType>();
+            var sc = new QueryResultToolType(query3, filteredCount, totalCount);
+
             return sc;
         }
         public ToolType FindToolTypeById(Guid id)
@@ -133,8 +136,9 @@ namespace WebApiTest.MSSQL
             var query1 = this.Tools;
             var totalCount = query1.Count();
             var filteredCount = query1.Count();
-            var query2 = query1.Skip(start).Take(length).ToList<Tool>();
-            var sc = new QueryResultTool(query2, filteredCount, totalCount);
+            var query2 = query1.OrderBy(x => x.ID);
+            var query3 = query2.Skip(start).Take(length).ToList<Tool>();
+            var sc = new QueryResultTool(query3, filteredCount, totalCount);
             return sc;
         }
 
@@ -172,6 +176,43 @@ namespace WebApiTest.MSSQL
 
         #endregion
 
+
+        //public QueryResult<T> GetResults<T>(string filterByValue, int start, int length, Dictionary<string, string> orderBy) where T: BaseEntity
+        //{
+        //    var query1 = this.Tools as IQueryable<T>;
+        //    var totalCount = query1.Count();
+        //    var filteredCount = query1.Count();
+        //    var query2 = query1.OrderBy(x => x.ID);
+        //    var query3 = query2.Skip(start).Take(length).ToList<T>();
+        //    var sc = new QueryResult<T>(query3, filteredCount, totalCount);
+        //    return sc;
+        //}
+
+        public IDictionary<Guid, Tool> GetToolsToBeAdded(IDictionary<Guid, Tool> src)
+        {
+            var res = new Dictionary<Guid, Tool>();
+
+            if (src.Count > 0)
+            {
+                var tblName = "dbo.Tool";
+                var allIDs = src.Select(x => $"('{x.Key.ToString()}')");
+                var vals = string.Join (",", allIDs);
+                var cmd = string.Format( @"
+SELECT ID  FROM 
+(
+VALUES {0}
+) V (ID)
+except SELECT ID FROM {1}",  vals, tblName);
+                var qry=this.Database.SqlQuery(typeof(Guid), cmd);
+                var allIDsToBeAdded = qry.OfType<Guid>();
+                foreach (var id in allIDsToBeAdded)
+                {
+                    res.Add(id, src[id]);
+                }
+            }
+
+            return res;
+        }
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

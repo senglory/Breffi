@@ -15,7 +15,6 @@ namespace WebApiTest.MSSQL.Tests
         [TestInitialize]
         public void Init()
         {
-            //SqlConnection.ClearAllPools();
             //Database.SetInitializer(new WebApiTestDBInitializer());
             dbContext = new WebApiTestDB();
             dbContext.Database.Initialize(true);
@@ -38,6 +37,35 @@ namespace WebApiTest.MSSQL.Tests
             {
                 var qty = dbContext.GetToolTotalCount();
                 Assert.IsTrue(qty == 2);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+
+        [TestMethod]
+        public void TestToolType()
+        {
+            try
+            {
+                var obj = dbContext.FindToolById(Guid .Parse ("4E89CD54-92B3-4013-A14E-AE2A34BFDB6A"));
+                Assert.IsTrue(obj.ToolType.Name == "Pliers");
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [TestMethod]
+        public void TestToolReadAll()
+        {
+            try
+            {
+                var obj = dbContext.GetResultsTool( null, 0, 10, null );
+                Assert.IsTrue(obj.TotalCount == 2);
             }
             catch (Exception ex)
             {

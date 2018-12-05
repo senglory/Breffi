@@ -10,7 +10,6 @@ namespace WebApiTest.Interfaces
     {
         int GetToolTotalCount();
         QueryResultTool GetResultsTool(string filterByValue, int start, int length, Dictionary<string, string> orderBy);
-
         Tool FindToolById(Guid id);
         Guid AddTool(Tool dto);
         void UpdateTool(Tool dto);
@@ -29,5 +28,10 @@ namespace WebApiTest.Interfaces
         Guid AddBrand(Brand dto);
         void UpdateBrand(Brand dto);
         bool DeleteBrand(Guid id);
+
+
+
+        IDictionary<Guid, Tool> GetToolsToBeAdded(IDictionary<Guid, Tool> src);
+        //QueryResult<T> GetResults<T>(string filterByValue, int start, int length, Dictionary<string, string> orderBy) where T : BaseEntity;
     }
 }

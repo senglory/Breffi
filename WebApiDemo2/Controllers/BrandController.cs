@@ -16,6 +16,7 @@ namespace WebApiDemo2.Controllers
 {
     public class BrandController : ControllerBasic
     {
+        [HttpGet]
         [Route("api/brand/{id?}")]
         public IHttpActionResult GetBrand(Guid id)
         {
@@ -23,6 +24,7 @@ namespace WebApiDemo2.Controllers
             return Json(res);
         }
 
+        [HttpGet]
         [Route("api/brand")]
         public IHttpActionResult Get()
         {
@@ -30,6 +32,7 @@ namespace WebApiDemo2.Controllers
             return Json(res);
         }
 
+        [HttpPost]
         [Route("api/brand")]
         public IHttpActionResult PostBrand([FromBody]Brand obj)
         {
@@ -41,6 +44,7 @@ namespace WebApiDemo2.Controllers
             return Json(res);
         }
 
+        [HttpPut]
         [Route("api/brand")]
         public IHttpActionResult PutBrand([FromBody]Brand obj)
         {
@@ -59,7 +63,7 @@ namespace WebApiDemo2.Controllers
             return Ok();
         }
 
-
+        [HttpPost]
         [Route("api/filter-brand")]
         public IHttpActionResult FindBrand([FromBody]DataTableRequest requestModel)
         {
